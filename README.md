@@ -734,7 +734,7 @@ Durante cerca de 6 s, o fundo rola, *tiles* são desenhados um a um, 8 *sprites*
 <br>
 
 - **Desempenho e Gargalos:**
-  Cada instrução gasta 2 ciclos de 25 MHz na UC, então o gargalo não está no coprocessador, e sim no envio pelo ARM: cada chamada a enviar_inst() lê o status e segura o *strobe* por 16 leituras da ponte em alto e 16 em baixo. Mesmo assim, a etapa de animação, com 33 instruções por quadro, rodou de forma fluida. Quando há WAITVBLANK na fila, o ARM fica bloqueado assim que a fila enche, o que, na prática, sincroniza o programa em C com o quadro sem nenhum código extra. No motor de *sprites*, o pior caso usa cerca de 58% do tempo disponível por linha, e o rasterizador tem custo constante, independentemente do tamanho dos polígonos.
+  Cada instrução gasta 2 ciclos de 25 MHz na UC, e a etapa de animação, com 33 instruções por quadro, rodou de forma fluida. Quando há WAITVBLANK na fila, o ARM fica bloqueado assim que a fila enche, o que, na prática, sincroniza o programa em C com o quadro sem nenhum código extra. No motor de *sprites*, o pior caso usa cerca de 58% do tempo disponível por linha, e o rasterizador tem custo constante, independentemente do tamanho dos polígonos. O principal gargalo do projeto é a memória: os dois *frame buffers* ocupam cerca de 93% dos blocos de memória utilizados, o que limita a inclusão de novos recursos gráficos que dependam de memória interna.
 
 ## 6. Instalação e Configuração do Projeto
 
@@ -776,14 +776,8 @@ O projeto apresenta algumas limitações, decorrentes de decisões de escopo tom
 - **Datapath integrado à Unidade de Controle (decisão de projeto):**
   A seleção dos campos do *IR* para os bancos é feita dentro da própria UC. Separá-la em um módulo próprio tornaria a arquitetura mais próxima de um processador convencional e facilitaria a inclusão de uma ULA.
 
-- **Envio de instruções por consulta ao status:**
-  O *driver* espera ativamente pelo espaço na fila e segura o *strobe* por várias leituras da ponte. Uma melhoria seria aproveitar o bit quase_cheia para enviar rajadas de instruções e reduzir o tempo de espera.
-
-- ***Scroll* com granularidade de *tile*:**
-  O deslocamento do fundo é feito em passos de 8 pixels. Um *scroll* por pixel deixaria a rolagem mais suave.
-
-- **Integração com o jogo:**
-  O próximo passo é incorporar ao coprocessador o jogo em C já idealizado, utilizando o *driver* desenvolvido nesta fase.
+- **Validação com o jogo:**
+  O próximo passo é desenvolver o jogo em C já idealizado, que utilizará o *driver* e a *ISA* desenvolvidos nesta fase para validar a integração final entre o processador ARM e o coprocessador.
 
 ## 8. Referências
 
