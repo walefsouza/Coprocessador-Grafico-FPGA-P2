@@ -76,12 +76,16 @@ A arquitetura trabalha com duas partes em paralelo. A parte de **comando** (*FIF
 
 O coprocessador possui **18 instruções de 32 bits**, todas com o *opcode* nos 5 bits menos significativos (**[4:0]**). Os dois bits mais significativos do *opcode* indicam o grupo da instrução, o que simplifica a decodificação na UC:
 
+<div align="center">
+
 Grupo | *opcode*[4:3] | Instruções
 :---|:---|:---
 Controle | 00 | WAITVBLANK, PRICOMP
 *Background* | 01 | DELBG, MOVBGX, PDRBG, MOVBGY
 *Sprites* | 10 | INSSPR, DELSPR, MOVSPR, PDRSPR, INVSPR, PRISPR
 Polígonos | 11 | INSPOL, DELPOL, MOVPOL, COLPOL, INVPOL, TAMPOL
+
+</div>
 
 > [!NOTE]
 > A *ISA* é composta apenas por comandos gráficos, sem instruções aritméticas ou de desvio. A lógica do programa (laços, decisões, cálculo de posições) fica no ARM, que envia ao coprocessador apenas o resultado na forma de instruções.
@@ -91,6 +95,8 @@ Polígonos | 11 | INSPOL, DELPOL, MOVPOL, COLPOL, INVPOL, TAMPOL
 
 <details>
 <summary><h3>Tabela de Instruções</h3></summary>
+
+<div align="center">
 
 *Opcode* | Hex | Instrução | Descrição
 :---|:---|:---|:---
@@ -113,6 +119,8 @@ Polígonos | 11 | INSPOL, DELPOL, MOVPOL, COLPOL, INVPOL, TAMPOL
 11100 | 0x1C | INVPOL | Espelhamento horizontal/vertical do polígono
 11101 | 0x1D | TAMPOL | Define largura e altura do polígono
 
+</div>
+
 </details>
 
 <details>
@@ -120,14 +128,20 @@ Polígonos | 11 | INSPOL, DELPOL, MOVPOL, COLPOL, INVPOL, TAMPOL
 
 #### WAITVBLANK
 
+<div align="center">
+
 Nome do Campo | Descrição | Tamanho | Bit final | Bit inicial
 :---|:---|:---|:---|:---
 Opcode | Código da operação (00000) | 5 bits | 4 | 0
 Não usados | | 27 bits | 31 | 5
 
+</div>
+
 Coloca a UC no estado ESPERA_VBLANK; as instruções seguintes permanecem na fila até o início do próximo *vertical blank*. É usada para animações sincronizadas com o quadro e como temporizador (1 WAITVBLANK ≈ 16,7 ms).
 
 #### PRICOMP
+
+<div align="center">
 
 Nome do Campo | Descrição | Tamanho | Bit final | Bit inicial
 :---|:---|:---|:---|:---
@@ -137,8 +151,9 @@ POL | 1 promove a camada de polígonos | 1 bit | 6 | 6
 BG | 1 promove a camada de fundo | 1 bit | 7 | 7
 Não usados | | 24 bits | 31 | 8
 
-> [!NOTE]
-> Após o *reset*, nenhuma camada está promovida, valendo a ordem padrão *sprite* > polígono > fundo.
+</div>
+
+> **Nota:** Após o *reset*, nenhuma camada está promovida, valendo a ordem padrão *sprite* > polígono > fundo.
 
 </details>
 
@@ -147,13 +162,19 @@ Não usados | | 24 bits | 31 | 8
 
 #### DELBG
 
+<div align="center">
+
 Nome do Campo | Descrição | Tamanho | Bit final | Bit inicial
 :---|:---|:---|:---|:---
 Opcode | Código da operação (01001) | 5 bits | 4 | 0
 LIGA | 0 desliga, 1 liga o fundo | 1 bit | 5 | 5
 Não usados | | 26 bits | 31 | 6
 
+</div>
+
 #### MOVBGX
+
+<div align="center">
 
 Nome do Campo | Descrição | Tamanho | Bit final | Bit inicial
 :---|:---|:---|:---|:---
@@ -162,7 +183,11 @@ Não usados | | 5 bits | 9 | 5
 X | Deslocamento horizontal em *tiles* | 6 bits | 15 | 10
 Não usados | | 16 bits | 31 | 16
 
+</div>
+
 #### MOVBGY
+
+<div align="center">
 
 Nome do Campo | Descrição | Tamanho | Bit final | Bit inicial
 :---|:---|:---|:---|:---
@@ -171,10 +196,13 @@ Não usados | | 5 bits | 9 | 5
 Y | Deslocamento vertical em *tiles* | 5 bits | 14 | 10
 Não usados | | 17 bits | 31 | 15
 
-> [!NOTE]
-> Valores acima do tamanho do mapa são reduzidos pela UC antes da gravação (por exemplo, MOVBGX com 45 equivale a 5), garantindo que o *wraparound* sempre funcione.
+</div>
+
+> **Nota:** Valores acima do tamanho do mapa são reduzidos pela UC antes da gravação (por exemplo, MOVBGX com 45 equivale a 5), garantindo que o *wraparound* sempre funcione.
 
 #### PDRBG
+
+<div align="center">
 
 Nome do Campo | Descrição | Tamanho | Bit final | Bit inicial
 :---|:---|:---|:---|:---
@@ -183,8 +211,9 @@ TILE | ID do *tile* a ser gravado | 8 bits | 12 | 5
 END | Posição no *tilemap* (linha × 40 + coluna) | 11 bits | 23 | 13
 Não usados | | 8 bits | 31 | 24
 
-> [!NOTE]
-> As posições visíveis vão de 0 a 1199. Endereços de 1200 a 2047 são aceitos, mas não aparecem na tela.
+</div>
+
+> **Nota:** As posições visíveis vão de 0 a 1199. Endereços de 1200 a 2047 são aceitos, mas não aparecem na tela.
 
 </details>
 
@@ -195,6 +224,8 @@ Todas as instruções de *sprites* usam o ID nos bits [9:5] (0 a 31).
 
 #### INSSPR, PDRSPR e PRISPR
 
+<div align="center">
+
 Nome do Campo | Descrição | Tamanho | Bit final | Bit inicial
 :---|:---|:---|:---|:---
 Opcode | 10000 (INSSPR), 10011 (PDRSPR) ou 10101 (PRISPR) | 5 bits | 4 | 0
@@ -202,10 +233,13 @@ ID | Índice do *sprite* | 5 bits | 9 | 5
 OP | Padrão (INSSPR, PDRSPR) ou prioridade (PRISPR) | 5 bits | 14 | 10
 Não usados | | 17 bits | 31 | 15
 
-> [!WARNING]
-> INSSPR ativa o *sprite* e zera posição, espelho e prioridade. Para que o *sprite* apareça no lugar desejado, deve-se sempre enviar MOVSPR depois de INSSPR.
+</div>
+
+> **Atenção:** INSSPR ativa o *sprite* e zera posição, espelho e prioridade. Para que o *sprite* apareça no lugar desejado, deve-se sempre enviar MOVSPR depois de INSSPR.
 
 #### DELSPR
+
+<div align="center">
 
 Nome do Campo | Descrição | Tamanho | Bit final | Bit inicial
 :---|:---|:---|:---|:---
@@ -213,7 +247,11 @@ Opcode | Código da operação (10001) | 5 bits | 4 | 0
 ID | Índice do *sprite* | 5 bits | 9 | 5
 Não usados | | 22 bits | 31 | 10
 
+</div>
+
 #### MOVSPR
+
+<div align="center">
 
 Nome do Campo | Descrição | Tamanho | Bit final | Bit inicial
 :---|:---|:---|:---|:---
@@ -223,7 +261,11 @@ Y | Posição vertical (0 a 255) | 8 bits | 17 | 10
 X | Posição horizontal (0 a 511) | 9 bits | 26 | 18
 Não usados | | 5 bits | 31 | 27
 
+</div>
+
 #### INVSPR
+
+<div align="center">
 
 Nome do Campo | Descrição | Tamanho | Bit final | Bit inicial
 :---|:---|:---|:---|:---
@@ -232,6 +274,8 @@ ID | Índice do *sprite* | 5 bits | 9 | 5
 V | Espelho vertical | 1 bit | 10 | 10
 H | Espelho horizontal | 1 bit | 11 | 11
 Não usados | | 20 bits | 31 | 12
+
+</div>
 
 </details>
 
@@ -242,6 +286,8 @@ Todas as instruções de polígonos usam o ID nos bits [7:5] (0 a 7).
 
 #### INSPOL
 
+<div align="center">
+
 Nome do Campo | Descrição | Tamanho | Bit final | Bit inicial
 :---|:---|:---|:---|:---
 Opcode | Código da operação (11000) | 5 bits | 4 | 0
@@ -251,7 +297,11 @@ FORMA | 0 quadrado, 1 retângulo, 2 isósceles, 3 equilátero, 4 escaleno | 3 bi
 COR | Cor de 8 bits (RRRGGGBB) | 8 bits | 20 | 13
 Não usados | | 11 bits | 31 | 21
 
+</div>
+
 #### COLPOL
+
+<div align="center">
 
 Nome do Campo | Descrição | Tamanho | Bit final | Bit inicial
 :---|:---|:---|:---|:---
@@ -261,7 +311,11 @@ Não usados | | 5 bits | 12 | 8
 COR | Nova cor de 8 bits (RRRGGGBB) | 8 bits | 20 | 13
 Não usados | | 11 bits | 31 | 21
 
+</div>
+
 #### MOVPOL e TAMPOL
+
+<div align="center">
 
 Nome do Campo | Descrição | Tamanho | Bit final | Bit inicial
 :---|:---|:---|:---|:---
@@ -272,7 +326,11 @@ B | Y (MOVPOL) ou altura H (TAMPOL), 0 a 255 | 8 bits | 17 | 10
 A | X (MOVPOL) ou largura W (TAMPOL), 0 a 511 | 9 bits | 26 | 18
 Não usados | | 5 bits | 31 | 27
 
+</div>
+
 #### INVPOL
+
+<div align="center">
 
 Nome do Campo | Descrição | Tamanho | Bit final | Bit inicial
 :---|:---|:---|:---|:---
@@ -283,7 +341,11 @@ V | Espelho vertical | 1 bit | 10 | 10
 H | Espelho horizontal | 1 bit | 11 | 11
 Não usados | | 20 bits | 31 | 12
 
+</div>
+
 #### DELPOL
+
+<div align="center">
 
 Nome do Campo | Descrição | Tamanho | Bit final | Bit inicial
 :---|:---|:---|:---|:---
@@ -291,8 +353,9 @@ Opcode | Código da operação (11001) | 5 bits | 4 | 0
 ID | Índice do polígono | 3 bits | 7 | 5
 Não usados | | 24 bits | 31 | 8
 
-> [!WARNING]
-> DELPOL zera também o tamanho do polígono. Antes de reutilizar o mesmo ID, deve-se enviar um novo TAMPOL. A ordem recomendada é TAMPOL → INSPOL → MOVPOL, pois INSPOL zera a posição e o espelho, mas mantém o tamanho.
+</div>
+
+> **Atenção:** DELPOL zera também o tamanho do polígono. Antes de reutilizar o mesmo ID, deve-se enviar um novo TAMPOL. A ordem recomendada é TAMPOL → INSPOL → MOVPOL, pois INSPOL zera a posição e o espelho, mas mantém o tamanho.
 
 </details>
 
@@ -316,11 +379,15 @@ As instruções chegam do ARM por uma fila, e o coprocessador não possui memór
 
 O ARM fala com a FPGA pela ponte *Lightweight HPS-to-FPGA*, que começa no endereço **0xFF200000**. No *Platform Designer* foram criados três PIOs:
 
+<div align="center">
+
 PIO | Offset | Direção | Função
 :---|:---|:---|:---
 PIO_INSTR | 0x00 | ARM → FPGA | Instrução de 32 bits
 PIO_CTRL | 0x10 | ARM → FPGA | Bit 0: *strobe* de escrita na fila; bit 1: limpar erro
 PIO_STATUS | 0x20 | FPGA → ARM | Estado da fila, da UC e do erro
+
+</div>
 
 Como o *HPS* e o coprocessador usam *clocks* diferentes, o *strobe* passa por um **sincronizador de 2 flip-flops** e por um **detector de borda de subida** antes de empurrar a instrução na fila. Assim, cada transição 0→1 do *strobe* gera exatamente um pulso de escrita, independentemente de quanto tempo o ARM mantenha o sinal em nível alto. O bit de limpar erro também passa por um sincronizador de 2 estágios.
 
@@ -348,11 +415,15 @@ Um contador acompanha quantas instruções há na fila e gera as *flags* vazia, 
 
 A *unidade_controle* implementa o ciclo de busca/execução com uma *FSM* de 3 estados:
 
+<div align="center">
+
 Estado | Função | Próximo estado
 :---|:---|:---
 **BUSCA** | Se a fila não estiver vazia, copia a instrução para o *IR* e avança a fila | EXECUTA
 **EXECUTA** | Decodifica o *opcode* e gera a escrita no banco correspondente | BUSCA (ou ESPERA_VBLANK, se WAITVBLANK)
 **ESPERA_VBLANK** | Mantém a UC parada até o pulso de início do *vblank* | BUSCA
+
+</div>
 
 * **IR:** registrador de instrução que guarda os 32 bits buscados da fila. Todos os campos (*opcode*, ID, coordenadas, cor, forma) são extraídos do *IR* por fatiamento de bits.
 * **Decode por *case*:** o *opcode* define qual banco e qual campo são escritos.
@@ -374,6 +445,8 @@ Cada instrução gasta **2 ciclos de *clock*** (BUSCA + EXECUTA), exceto WAITVBL
 
 O *registrador_status* concentra em uma palavra de 32 bits, atualizada a cada ciclo, o estado do coprocessador, exposto ao ARM pelo PIO_STATUS:
 
+<div align="center">
+
 Bits | Campo | Descrição
 :---|:---|:---
 [0] | fifo_vazia | Fila sem instruções pendentes
@@ -387,6 +460,8 @@ Bits | Campo | Descrição
 [23:8] | contador_quadros | Contador de quadros de 16 bits
 [24] | overflow | Houve tentativa de escrita com a fila cheia
 [31:25] | done_cnt | Contador de instruções concluídas
+
+</div>
 
 Os sinais de *handshake* foram mapeados da seguinte forma:
 
@@ -426,6 +501,8 @@ Cada linha lógica dura duas linhas VGA (1600 ciclos), e o pior caso, com os 32 
 
 **Rasterizador de Polígonos:** os 8 polígonos ficam no banco de registradores (atributos de 32 bits e tamanhos de 17 bits, em bancos separados), lido inteiro em paralelo a cada pixel. Cada polígono vira um quadrilátero de 4 vértices calculados só com somas e *shifts*, sem divisor; o triângulo é um quadrilátero com um vértice repetido.
 
+<div align="center">
+
 Forma | Código | Altura | Vértice superior
 :---|:---|:---|:---
 Quadrado | 0 | W | —
@@ -433,6 +510,8 @@ Retângulo | 1 | H | —
 Triângulo isósceles | 2 | H | W/2
 Triângulo equilátero | 3 | ≈ 0,86 × W | W/2
 Triângulo escaleno | 4 | H | ≈ W/5
+
+</div>
 
 Para cada pixel, o hardware faz o produto vetorial entre cada aresta e o vetor até o pixel: **32 arestas e 64 multiplicações ao mesmo tempo**. O pixel está dentro se as 4 arestas derem o mesmo sinal. O espelhamento é feito refletindo os vértices dentro da área do polígono, e o resultado passa por dois estágios de *pipeline* para manter o alinhamento com as outras camadas.
 
@@ -461,6 +540,8 @@ O ghrd_top integra o sistema *HPS* gerado pelo *Platform Designer* (soc_system) 
 
 O *driver* em *Assembly* ARM só transporta palavras de 32 bits entre o ARM e a FPGA; quem monta as instruções é o programa em C. As funções disponíveis são:
 
+<div align="center">
+
 Função | Descrição
 :---|:---
 abrir() | Mapeia a ponte com /dev/mem e mmap. Retorna 0 (ok) ou −1 (erro)
@@ -468,6 +549,8 @@ fechar() | Desmapeia a ponte e fecha o arquivo
 enviar_inst(inst) | Espera a fila ter espaço, escreve a instrução e gera o pulso de *strobe*
 erro_inst() | Lê o bit de erro do status (1 = erro)
 limpar_erro() | Zera as *flags* de erro e *overflow*
+
+</div>
 
 > [!NOTE]
 > **Decisão de projeto:** o *driver* é mínimo e não conhece a *ISA*. Assim, mudar ou acrescentar uma instrução não exige mexer no *Assembly*, só nas macros em C que montam as palavras de 32 bits.
@@ -489,6 +572,8 @@ Os testes foram feitos com o programa **teste.c**, executado no ARM e usando ape
 
 Antes de cada etapa, a cena volta ao estado inicial (fundo ligado e parado, compositor no padrão, nenhum *sprite* ou polígono ativo) e o erro é limpo. Ao fim de cada etapa, o programa confere se nenhum erro foi sinalizado.
 
+<div align="center">
+
 Etapa | Nome | O que é testado
 :---|:---|:---
 0 | Comunicação | Envio de instrução válida, *opcodes* inexistentes e limpeza do erro
@@ -501,6 +586,8 @@ Etapa | Nome | O que é testado
 7 | Animação sincronizada | Movimento quadro a quadro com WAITVBLANK
 8 | Casos extremos | Limites de posição, tamanho e endereços
 9 | Integração | Todas as unidades funcionais ao mesmo tempo
+
+</div>
 
 ### 4.1. Comunicação e Comandos Inválidos
 
